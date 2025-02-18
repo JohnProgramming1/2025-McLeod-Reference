@@ -29,6 +29,10 @@ import frc.robot.subsystems.CANdleSystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 
+import frc.robot.subsystems.ElevatorSubsystem;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+
+
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond)*.5; // kSpeedAt12Volts desired top speed
@@ -51,6 +55,8 @@ public class RobotContainer {
     
     private final CANdleSystem candle;
 
+    private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+    
     private final SendableChooser<Command> autoChooser;
 
     private final Command autonomousCommand = new PathPlannerAuto("AutoTest1");
@@ -107,6 +113,13 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        
+        joystick.leftBumper().onTrue(new InstantCommand(() -> elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.INTAKE_POSITION)));
+        joystick.rightBumper().onTrue(new InstantCommand(() -> elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.L2_POSITION)));
+        joystick.leftTrigger().onTrue(new InstantCommand(() -> elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.L3_POSITION)));
+        joystick.rightTrigger().onTrue(new InstantCommand(() -> elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.ALGAE_SCORE_POSITION)));
+        
     }
 
     // Make sure CANdle updates every cycle
