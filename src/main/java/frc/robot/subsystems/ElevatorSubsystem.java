@@ -28,11 +28,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final DigitalInput throughBoreEncoder;
     private final PIDController pidController;
 
+    private CoralHandlerSubsystem coralHandler;
+
     private double targetPosition = INTAKE_POSITION;
 
 
 
-    public ElevatorSubsystem() {
+    public ElevatorSubsystem(CoralHandlerSubsystem coralHandler) {
+        this.coralHandler = coralHandler; //Reference stored
         leaderMotor = new SparkMax(LEADER_MOTOR_ID, MotorType.kBrushless);
         followerMotor = new SparkMax(FOLLOWER_MOTOR_ID, MotorType.kBrushless);
         throughBoreEncoder = new DigitalInput(ENCODER_DIO_PORT);
@@ -89,11 +92,20 @@ public class ElevatorSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         double currentPosition = getElevatorPosition();
-        double power = pidController.calculate(currentPosition, targetPosition);
+    
+        // Check if the elevator is locked by the CoralHandler
+        if (coralHandler.isElevatorLocked()) {
+            leaderMotor.set(0); // Stop motor movement
+            System.out.println("Elevator LOCKED by Coral Handler");
+        } else {
+            double power = pidController.calculate(currentPosition, targetPosition);
+            leaderMotor.set(power); // Apply PID control if unlocked
+            System.out.println("Elevator Moving | Position: " + currentPosition + " | Target: " + targetPosition + " | Power: " + power);
+        }
 
-        leaderMotor.set(power); // Apply PID output to leader motor
-
-        // Debug Output
-        System.out.println("🚀 Elevator Position: " + currentPosition + " | Target: " + targetPosition + " | Power: " + power);
+        if (Math.abs(currentPosition - targetPosition) < 0.5) { // 0.5 is tolerance
+            leaderMotor.set(0); // Stop the motor
+            System.out.println("Elevator reached target.");
+        }
     }
 }
