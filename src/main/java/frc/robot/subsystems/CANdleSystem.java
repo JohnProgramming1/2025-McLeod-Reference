@@ -1,3 +1,4 @@
+// Comment from observations from JohnProgramming1(Wyatt)
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,7 +16,7 @@ public class CANdleSystem extends SubsystemBase {
 
     public CANdleSystem() {
         configureCANdle();
-        changeAnimation(AnimationTypes.Rainbow); // Default animation
+        changeAnimation(AnimationTypes.Rainbow); // Default animation 
     }
 
     private void configureCANdle() {
@@ -32,7 +33,7 @@ public class CANdleSystem extends SubsystemBase {
         m_currentAnimation = toChange;
         
         switch (toChange) {
-            case ColorFlow:
+            case ColorFlow: //Animations from JohnProgramming1(Wyatt)
                 m_toAnimate = new ColorFlowAnimation(128, 20, 70, 0, 0.7, LedCount, ColorFlowAnimation.Direction.Forward);
                 break;
             case Fire:
@@ -63,11 +64,11 @@ public class CANdleSystem extends SubsystemBase {
                 m_toAnimate = null;
                 break;
         }
-        System.out.println("Changed to " + m_currentAnimation.toString());
+        System.out.println("Changed to " + m_currentAnimation.toString()); // Print the current animation type
     }
 
     @Override
-    public void periodic() {
+    public void periodic() { 
         if (m_toAnimate == null) {
             m_candle.setLEDs(255, 0, 0); // Default solid red
         } else {
@@ -75,7 +76,7 @@ public class CANdleSystem extends SubsystemBase {
         }
     }
 
-    public void incrementAnimation() {
+    public void incrementAnimation() { // Increment the animation type to add silliness (JohnProgramming1)
         switch (m_currentAnimation) {
             case ColorFlow: changeAnimation(AnimationTypes.Fire); break;
             case Fire: changeAnimation(AnimationTypes.Larson); break;
@@ -87,6 +88,6 @@ public class CANdleSystem extends SubsystemBase {
             case Twinkle: changeAnimation(AnimationTypes.TwinkleOff); break;
             case TwinkleOff: changeAnimation(AnimationTypes.ColorFlow); break;
             case SetAll: changeAnimation(AnimationTypes.ColorFlow); break;
-    }
-}
+        }
+    }   
 }
